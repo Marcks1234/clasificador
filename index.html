@@ -3,43 +3,266 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clasificador de Perros y Gatos</title>
-
+  <title>NEURAL PET SCAN // Clasificador Inteligente de Mascotas</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Orbitron & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;800;900&display=swap" rel="stylesheet">
+  
   <!-- TensorFlow.js y Teachable Machine -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="flex flex-col min-h-screen selection:bg-cyan-500 selection:text-black">
 
-  <main class="card">
-    <header class="header">
-      <span class="badge" id="status-badge">Cargando modelo...</span>
-      <h1>Detector de Mascotas</h1>
-      <p class="subtitle">Sube una fotografía para identificar si corresponde a un perro o un gato.</p>
-    </header>
+  <!-- HEADER NAVBAR -->
+  <header class="w-full border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-fuchsia-500 p-[1px] flex items-center justify-center glow-cyan">
+          <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h1 class="font-orbitron font-extrabold text-lg sm:text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">
+            NEURAL<span class="text-fuchsia-500">PET</span> AI
+          </h1>
+          <p class="text-[10px] tracking-widest text-slate-400 font-mono uppercase">Sistema Biométrico v3.2</p>
+        </div>
+      </div>
 
-    <div class="upload-zone">
-      <input type="file" id="imageInput" accept="image/*" onchange="predictImage(event)">
-      <label for="imageInput" class="upload-label">
-        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="17 8 12 3 7 8"></polyline>
-          <line x1="12" y1="3" x2="12" y2="15"></line>
-        </svg>
-        <span>Seleccionar una imagen</span>
-        <small>Formata JPG, PNG o WEBP</small>
-      </label>
+      <!-- Model Status Badge -->
+      <div class="flex items-center gap-3">
+        <div id="status-badge" class="flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-cyan-500/30 bg-cyan-950/30 text-cyan-300 text-xs font-mono backdrop-blur-md transition-all duration-300">
+          <span class="relative flex h-2.5 w-2.5">
+            <span id="status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+            <span id="status-dot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+          </span>
+          <span id="status-text" class="tracking-wide">INICIALIZANDO MOTOR AI...</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 flex flex-col justify-center">
+    
+    <!-- Hero Banner Text -->
+    <div class="text-center max-w-3xl mx-auto mb-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-fuchsia-500/30 bg-fuchsia-950/20 text-fuchsia-400 text-xs font-mono mb-4 uppercase tracking-widest">
+        <span>⚡ Visión Computacional Avanzada</span>
+      </div>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-orbitron font-black text-white tracking-tight mb-4">
+        RECONOCIMIENTO <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-fuchsia-400 glow-text-cyan">CANINO Y FELINO</span>
+      </h2>
+      <p class="text-slate-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+        Carga una fotografía o selecciona una muestra para ejecutar el escaneo neuronal en tiempo real impulsado por TensorFlow.js.
+      </p>
     </div>
 
-    <div class="preview-container">
-      <img id="preview" src="" alt="Vista previa">
+    <!-- MAIN DASHBOARD GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT COLUMN: UPLOAD & SAMPLES (5 Cols) -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Drag & Drop Card -->
+        <div class="glass-panel glass-panel-glow rounded-2xl p-6 relative">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-orbitron text-sm font-bold text-cyan-400 tracking-wider flex items-center gap-2">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+              </svg>
+              ENTRADA DE DATOS
+            </h3>
+            <span class="text-[10px] font-mono text-slate-500">JPG, PNG, WEBP</span>
+          </div>
+
+          <!-- Dropzone -->
+          <div id="dropzone" class="border-2 border-dashed border-slate-700 hover:border-cyan-400/70 bg-slate-900/40 hover:bg-slate-900/80 rounded-xl p-8 text-center transition-all duration-300 cursor-pointer group flex flex-col items-center justify-center min-h-[220px]">
+            <input type="file" id="fileInput" accept="image/*" class="hidden">
+            
+            <div class="w-16 h-16 rounded-full bg-slate-800/80 group-hover:bg-cyan-950/60 flex items-center justify-center text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 mb-4 border border-slate-700/50 group-hover:border-cyan-500/40">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 001.059-.112M13 7a4 4 0 11-8 0 4 4 0 018 0zm-5 7a5 5 0 015-5h2a5 5 0 015 5v1"/>
+              </svg>
+            </div>
+
+            <p class="text-sm font-medium text-slate-200 group-hover:text-cyan-300 transition-colors">
+              Arrastra y suelta tu imagen aquí
+            </p>
+            <p class="text-xs text-slate-500 mt-1">o haz clic para explorar tus archivos</p>
+          </div>
+        </div>
+
+        <!-- Sample Images Gallery -->
+        <div class="glass-panel rounded-2xl p-6">
+          <h3 class="font-orbitron text-xs font-bold text-slate-300 tracking-wider mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4 text-fuchsia-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            MUESTRAS RÁPIDAS DE PRUEBA
+          </h3>
+          <p class="text-xs text-slate-400 mb-4">Haz clic en cualquier imagen predeterminada para probar la red neuronal inmediatamente:</p>
+          
+          <div class="grid grid-cols-4 gap-3">
+            <!-- Dog Sample 1 -->
+            <button onclick="loadSampleImage('dog1')" class="sample-btn group relative aspect-square rounded-xl overflow-hidden border border-slate-700/60 hover:border-cyan-400 transition-all duration-300 focus:outline-none">
+              <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&auto=format&fit=crop&q=80" alt="Perro Muestra 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+              <span class="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-[9px] font-mono text-cyan-300 px-1.5 py-0.5 rounded">Perro A</span>
+            </button>
+            
+            <!-- Dog Sample 2 -->
+            <button onclick="loadSampleImage('dog2')" class="sample-btn group relative aspect-square rounded-xl overflow-hidden border border-slate-700/60 hover:border-cyan-400 transition-all duration-300 focus:outline-none">
+              <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=300&auto=format&fit=crop&q=80" alt="Perro Muestra 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+              <span class="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-[9px] font-mono text-cyan-300 px-1.5 py-0.5 rounded">Perro B</span>
+            </button>
+
+            <!-- Cat Sample 1 -->
+            <button onclick="loadSampleImage('cat1')" class="sample-btn group relative aspect-square rounded-xl overflow-hidden border border-slate-700/60 hover:border-fuchsia-400 transition-all duration-300 focus:outline-none">
+              <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300&auto=format&fit=crop&q=80" alt="Gato Muestra 1" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+              <span class="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-[9px] font-mono text-fuchsia-300 px-1.5 py-0.5 rounded">Gato A</span>
+            </button>
+
+            <!-- Cat Sample 2 -->
+            <button onclick="loadSampleImage('cat2')" class="sample-btn group relative aspect-square rounded-xl overflow-hidden border border-slate-700/60 hover:border-fuchsia-400 transition-all duration-300 focus:outline-none">
+              <img src="https://images.unsplash.com/photo-1573865526739-10659fec78a5?w=300&auto=format&fit=crop&q=80" alt="Gato Muestra 2" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+              <span class="absolute bottom-1 left-1 bg-black/70 backdrop-blur-sm text-[9px] font-mono text-fuchsia-300 px-1.5 py-0.5 rounded">Gato B</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: HUD PREVIEW & AI ANALYSIS RESULTS (7 Cols) -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <!-- Scanner Preview Card -->
+        <div class="glass-panel glass-panel-glow rounded-2xl p-6">
+          
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-orbitron text-sm font-bold text-white tracking-wider flex items-center gap-2">
+              <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+              VISOR BIOMÉTRICO HUD
+            </h3>
+            <span id="scan-status-text" class="text-xs font-mono text-cyan-400 bg-cyan-950/50 px-2.5 py-1 rounded-md border border-cyan-800/40">
+              ESPERANDO IMAGEN
+            </span>
+          </div>
+
+          <!-- Image Viewport Container with HUD Elements -->
+          <div id="scannerView" class="scanner-container relative w-full h-[320px] sm:h-[380px] bg-slate-950/80 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center group">
+            
+            <!-- HUD Corners -->
+            <div class="hud-corner hud-tl"></div>
+            <div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div>
+            <div class="hud-corner hud-br"></div>
+
+            <!-- Laser Scanning Line & Overlay Grid -->
+            <div class="scanner-line"></div>
+            <div class="scanner-grid"></div>
+
+            <!-- Placeholder Message (When no image is loaded) -->
+            <div id="placeholderUI" class="text-center px-4">
+              <div class="w-16 h-16 mx-auto mb-3 text-slate-700 flex items-center justify-center">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </div>
+              <p class="font-mono text-xs text-slate-500 uppercase tracking-widest">Sin entrada de señal visual</p>
+            </div>
+
+            <!-- Image Target Element -->
+            <img id="imagePreview" src="" alt="Muestra de Análisis" class="hidden max-h-full max-w-full object-contain z-0 transition-opacity duration-300">
+          </div>
+
+          <!-- RESULTS PANEL -->
+          <div class="mt-6 pt-6 border-t border-slate-800/80 space-y-5">
+            
+            <!-- Header Result Summary -->
+            <div class="flex items-center justify-between">
+              <div>
+                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-widest block">Predicción Principal</span>
+                <h4 id="topResultLabel" class="text-2xl font-orbitron font-extrabold text-slate-300 tracking-wide mt-0.5">
+                  --
+                </h4>
+              </div>
+              <div class="text-right">
+                <span class="text-[11px] font-mono text-slate-400 uppercase tracking-widest block">Confianza</span>
+                <span id="topResultConfidence" class="text-2xl font-orbitron font-extrabold text-cyan-400 glow-text-cyan mt-0.5 inline-block">
+                  0%
+                </span>
+              </div>
+            </div>
+
+            <!-- Probability Bars Container -->
+            <div id="probabilityBars" class="space-y-4">
+              
+              <!-- Perro Probability Bar -->
+              <div>
+                <div class="flex justify-between text-xs font-mono mb-1.5">
+                  <span class="text-slate-300 flex items-center gap-1.5">
+                    🐶 PERRO (DOG)
+                  </span>
+                  <span id="probDogText" class="text-cyan-400 font-bold">0.0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-900/90 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div id="probDogBar" class="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full w-0 transition-all duration-700 ease-out glow-cyan"></div>
+                </div>
+              </div>
+
+              <!-- Gato Probability Bar -->
+              <div>
+                <div class="flex justify-between text-xs font-mono mb-1.5">
+                  <span class="text-slate-300 flex items-center gap-1.5">
+                    🐱 GATO (CAT)
+                  </span>
+                  <span id="probCatText" class="text-fuchsia-400 font-bold">0.0%</span>
+                </div>
+                <div class="w-full h-3 bg-slate-900/90 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                  <div id="probCatBar" class="h-full bg-gradient-to-r from-fuchsia-500 to-pink-500 rounded-full w-0 transition-all duration-700 ease-out"></div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <div id="label-container" class="results-list"></div>
   </main>
 
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800/60 bg-slate-950/80 backdrop-blur-md py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs font-mono text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p>© 2026 NEURAL PET VISION. Powered by TensorFlow.js & Teachable Machine.</p>
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> GPU Acceleration Enabled
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Custom JS -->
   <script src="script.js"></script>
 </body>
 </html>

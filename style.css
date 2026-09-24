@@ -1,177 +1,144 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+:root {
+  --bg-dark: #070913;
+  --glass-bg: rgba(15, 23, 42, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --neon-cyan: #00f2fe;
+  --neon-blue: #4facfe;
+  --neon-purple: #9d4edd;
+  --neon-pink: #f72585;
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #f8fafc;
-  color: #0f172a;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-dark);
+  background-image: 
+    radial-gradient(circle at 15% 20%, rgba(0, 242, 254, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(157, 78, 221, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8) 0%, #070913 100%);
+  background-attachment: fixed;
+  color: #f8fafc;
   min-height: 100vh;
-  padding: 20px;
 }
 
-/* Tarjeta Principal */
-.card {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 420px;
-  width: 100%;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
 }
 
-.header {
-  text-align: center;
-  margin-bottom: 24px;
+/* Custom Glassmorphism Card Style */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-/* Indicador de Estado */
-.badge {
-  display: inline-block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background-color: #f1f5f9;
-  color: #64748b;
-  margin-bottom: 12px;
+.glass-panel-glow {
+  position: relative;
 }
 
-.badge.ready {
-  background-color: #dcfce7;
-  color: #166534;
+.glass-panel-glow::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.4), transparent 40%, rgba(157, 78, 221, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.badge.error {
-  background-color: #fee2e2;
-  color: #991b1b;
+/* Pulsing & Glowing elements */
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.4);
 }
 
-h1 {
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
+.glow-text-cyan {
+  text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
 }
 
-.subtitle {
-  font-size: 0.875rem;
-  color: #64748b;
-  line-height: 1.4;
+.glow-text-pink {
+  text-shadow: 0 0 12px rgba(247, 37, 133, 0.6);
 }
 
-/* Zona de Carga de Archivos */
-.upload-zone {
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  background-color: #f8fafc;
-  transition: all 0.2s ease;
-}
-
-.upload-zone:hover {
-  border-color: #2563eb;
-  background-color: #eff6ff;
-}
-
-#imageInput {
-  display: none;
-}
-
-.upload-label {
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.upload-icon {
-  width: 26px;
-  height: 26px;
-  stroke: #2563eb;
-  margin-bottom: 4px;
-}
-
-.upload-label span {
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: #1e293b;
-}
-
-.upload-label small {
-  font-size: 0.75rem;
-  color: #94a3b8;
-}
-
-/* Vista Previa de Imagen */
-.preview-container {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
-}
-
-#preview {
-  max-width: 100%;
-  max-height: 240px;
-  border-radius: 10px;
-  display: none;
-  object-fit: cover;
-  border: 1px solid #e2e8f0;
-}
-
-/* Lista de Resultados */
-.results-list {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.result-item {
-  background-color: #f8fafc;
-  border: 1px solid #f1f5f9;
-  padding: 10px 12px;
-  border-radius: 8px;
-}
-
-.result-header {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.class-name {
-  color: #334155;
-  text-transform: capitalize;
-}
-
-.percentage {
-  color: #2563eb;
-}
-
-.progress-bar {
-  height: 6px;
-  background-color: #e2e8f0;
-  border-radius: 3px;
+/* Custom Laser Scanner Effect */
+.scanner-container {
+  position: relative;
   overflow: hidden;
 }
 
-.progress-fill {
-  height: 100%;
-  background-color: #2563eb;
+.scanner-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #00f2fe, #ffffff, #00f2fe, transparent);
+  box-shadow: 0 0 15px #00f2fe, 0 0 30px #00f2fe;
+  z-index: 20;
+  top: 0;
+  display: none;
+}
+
+.scanner-container.active .scanner-line {
+  display: block;
+  animation: scanAnimation 2s ease-in-out infinite alternate;
+}
+
+.scanner-grid {
+  position: absolute;
+  inset: 0;
+  background-size: 30px 30px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 242, 254, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 242, 254, 0.08) 1px, transparent 1px);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.scanner-container.active .scanner-grid {
+  opacity: 1;
+}
+
+@keyframes scanAnimation {
+  0% {
+    top: 0%;
+  }
+  100% {
+    top: 96%;
+  }
+}
+
+/* Corner Reticles for Futuristic HUD */
+.hud-corner {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-color: var(--neon-cyan);
+  pointer-events: none;
+  z-index: 25;
+}
+
+.hud-tl { top: 10px; left: 10px; border-top: 2px solid; border-left: 2px solid; }
+.hud-tr { top: 10px; right: 10px; border-top: 2px solid; border-right: 2px solid; }
+.hud-bl { bottom: 10px; left: 10px; border-bottom: 2px solid; border-left: 2px solid; }
+.hud-br { bottom: 10px; right: 10px; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 242, 254, 0.3);
   border-radius: 3px;
-  transition: width 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neon-cyan);
 }
