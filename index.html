@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clasificador de Perros y Gatos</title>
+
+  <!-- TensorFlow.js y Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.7.4/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8.4-alpha2/dist/teachablemachine-image.min.js"></script>
+
+  <!-- Hoja de estilos externa -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="container">
+    <h1>Clasificador de Perros y Gatos</h1>
+    <p class="description">Selecciona o toma una fotografía para identificar si corresponde a un perro o un gato.</p>
+
+    <div class="upload-box">
+      <label for="imageInput" class="btn-upload">Cargar imagen</label>
+      <input type="file" id="imageInput" accept="image/*" onchange="predictImage(event)">
+    </div>
+
+    <div class="preview-card">
+      <img id="preview" src="" alt="Vista previa de la imagen">
+    </div>
+
+    <div id="status-message" class="status">Cargando modelo de Inteligencia Artificial...</div>
+
+    <div id="label-container" class="results-container"></div>
+  </main>
+
+  <!-- Script principal -->
+  <script src="script.js"></script>
+</body>
+</html>
