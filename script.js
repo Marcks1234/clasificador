@@ -31,8 +31,6 @@ async function predictImage(event) {
   if (!model) await init();
 
   const imgElement = document.getElementById("preview");
-  imgElement.src = URL.createObjectURL(files[0]);
-  imgElement.style.display = "block";
 
   imgElement.onload = async () => {
     const prediction = await model.predict(imgElement);
@@ -49,6 +47,11 @@ async function predictImage(event) {
       container.appendChild(div);
     }
   };
+
+  imgElement.src = URL.createObjectURL(files[0]);
+  imgElement.style.display = "block";
+
+  event.target.value = ""; // permite volver a elegir la misma foto
 }
 
 // Cargar el modelo automáticamente al iniciar la página
