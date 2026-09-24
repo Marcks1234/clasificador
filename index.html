@@ -5,35 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clasificador de Perros y Gatos</title>
 
-  <!-- 1. Cargar TensorFlow.js -->
+  <!-- TensorFlow.js y Teachable Machine -->
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-  
-  <!-- 2. Cargar la librería oficial de Teachable Machine Image -->
   <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <main class="container">
-    <h1>Clasificador de Perros y Gatos</h1>
-    <p class="description">Selecciona una fotografía para identificar si corresponde a un perro o un gato.</p>
+  <main class="card">
+    <header class="header">
+      <span class="badge" id="status-badge">Cargando modelo...</span>
+      <h1>Detector de Mascotas</h1>
+      <p class="subtitle">Sube una fotografía para identificar si corresponde a un perro o un gato.</p>
+    </header>
 
-    <div class="upload-box">
-      <label for="imageInput" class="btn-upload">Cargar imagen</label>
+    <div class="upload-zone">
       <input type="file" id="imageInput" accept="image/*" onchange="predictImage(event)">
+      <label for="imageInput" class="upload-label">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Seleccionar una imagen</span>
+        <small>Formata JPG, PNG o WEBP</small>
+      </label>
     </div>
 
-    <div class="preview-card">
-      <img id="preview" src="" alt="Vista previa de la imagen">
+    <div class="preview-container">
+      <img id="preview" src="" alt="Vista previa">
     </div>
 
-    <div id="status-message" class="status">Cargando modelo de Inteligencia Artificial...</div>
-
-    <div id="label-container" class="results-container"></div>
+    <div id="label-container" class="results-list"></div>
   </main>
 
-  <!-- 3. Tu script al final para asegurar que las librerías anteriores ya se hayan cargado -->
   <script src="script.js"></script>
 </body>
 </html>

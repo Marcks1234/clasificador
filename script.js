@@ -1,11 +1,8 @@
-// Ruta hacia la carpeta con los archivos de Teachable Machine
 const MODEL_URL = "./modelos_ia/";
-
 let model, maxPredictions;
 
-// Inicializa y carga el modelo de Inteligencia Artificial
 async function init() {
-  const statusElement = document.getElementById("status-message");
+  const statusBadge = document.getElementById("status-badge");
   
   try {
     const modelURL = MODEL_URL + "model.json";
@@ -14,16 +11,15 @@ async function init() {
     model = await tmImage.load(modelURL, metadataURL);
     maxPredictions = model.getTotalClasses();
 
-    statusElement.innerText = "Modelo cargado y listo para clasificar.";
-    statusElement.style.color = "#27ae60";
+    statusBadge.innerText = "Modelo listo";
+    statusBadge.classList.add("ready");
   } catch (error) {
     console.error("Error al cargar el modelo:", error);
-    statusElement.innerText = "Error al cargar los archivos del modelo.";
-    statusElement.style.color = "#e74c3c";
+    statusBadge.innerText = "Error al cargar";
+    statusBadge.classList.add("error");
   }
 }
 
-// Procesa la imagen seleccionada y ejecuta la predicción
 async function predictImage(event) {
   const files = event.target.files;
   if (!files || files.length === 0) return;
@@ -37,22 +33,32 @@ async function predictImage(event) {
     const container = document.getElementById("label-container");
     container.innerHTML = "";
 
+    // Ordenar resultados de mayor a menor probabilidad
+    prediction.sort((a, b) => b.probability - a.probability);
+
     for (let i = 0; i < maxPredictions; i++) {
       const className = prediction[i].className;
-      const porcentaje = (prediction[i].probability * 100).toFixed(2);
+      const porcentaje = (prediction[i].probability * 100).toFixed(1);
 
-      const div = document.createElement("div");
-      div.className = "result-item";
-      div.innerHTML = `<span>${className}</span> <span>${porcentaje}%</span>`;
-      container.appendChild(div);
+      const item = document.createElement("div");
+      item.className = "result-item";
+      item.innerHTML = `
+        <div class="result-header">
+          <span class="class-name">${className}</span>
+          <span class="percentage">${porcentaje}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${porcentaje}%"></div>
+        </div>
+      `;
+      container.appendChild(item);
     }
   };
 
   imgElement.src = URL.createObjectURL(files[0]);
   imgElement.style.display = "block";
 
-  event.target.value = ""; // permite volver a elegir la misma foto
+  event.target.value = "";
 }
 
-// Cargar el modelo automáticamente al iniciar la página
 window.addEventListener("DOMContentLoaded", init);
